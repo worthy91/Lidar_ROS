@@ -1,0 +1,40 @@
+### ekf.yaml ###
+ekf_filter_node:
+  ros__parameters:
+    frequency: 30.0
+    two_d_mode: true
+    publish_acceleration: false
+    publish_tf: true
+    map_frame: map              # AMCL handles map -> odom
+    odom_frame: odom            # EKF handles odom -> base_footprint
+    base_link_frame: base_footprint
+    world_frame: odom           # EKF output frame
+
+    # Odom (Wheel Encoders) from Gazebo
+    # Config: [x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az]
+    odom0: /odometry
+    # We only use Velocities (vx, vyaw) from wheels because wheels slip! 
+    # We ignore absolute X/Y/Yaw from wheels to let IMU help correct drift.
+    odom0_config: [false, false, false,
+                   false, false, false,
+                   true,  false, false,
+                   false, false, true,
+                   false, false, false]
+    odom0_differential: false
+    odom0_queue_size: 10
+
+    # IMU from Gazebo
+    imu0: /imu
+    # Use Yaw (Orientation), Velocity Yaw (Vyaw), and Acceleration (ax)
+    imu0_config: [false, false, false,
+                  false, false, true,
+                  false, false, false,
+                  false, false, true,
+                  true,  false, false]
+    imu0_differential: false
+    imu0_queue_size: 10
+    imu0_remove_gravitational_acceleration: true
+    imu0_pose_rejection_threshold: 0.8   # default: 0.8
+    odom0_pose_rejection_threshold: 2.0  # higher → ignore odometry drift more
+    odom0_differential: true
+
